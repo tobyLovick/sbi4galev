@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 *.log
 *.err
+assets/
 transcripts/
 day_summaries/
 topic_summaries/
