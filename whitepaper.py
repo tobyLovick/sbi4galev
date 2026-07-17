@@ -46,6 +46,7 @@ Usage:
                           included, full abstracts until the budget is hit.
 """
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -55,6 +56,7 @@ from datetime import datetime
 from pathlib import Path
 
 import config
+import export_static as es
 import transcript_server as ts
 
 CONF_NAME = f"{config.CONF_FULL} ({config.CONF_SHORT}) {config.CONF_YEAR}"
@@ -78,6 +80,41 @@ def _talk_digest(t: dict) -> dict:
         "key_points": [p for p in s.get("key_points", []) if p][:5],
         "topics": [x for x in s.get("topics", []) if x][:6],
     }
+
+
+def _load_occurrences(allowed_folders: set[str]) -> tuple[list[dict], list[dict]]:
+    """Return (topics, tools) occurrence tallies with transcript/slide mention
+    counts, most-mentioned first. These are the on-box concept/tool extractions
+    (transcripts/concepts.json + tools.json), so the summary table alan writes is
+    grounded in real counts rather than invented.
+
+    Counts are recomputed from each item's per-talk breakdown, restricted to
+    `allowed_folders` (the permission allowlist) — so an unapproved talk never
+    contributes to the table. Items with no mentions across approved talks drop
+    out entirely."""
+    def _load(path: Path, key: str) -> list[dict]:
+        try:
+            items = json.loads(path.read_text()).get(key) or []
+        except Exception:
+            return []
+        out = []
+        for it in items:
+            name = it.get("name") or ""
+            if not name:
+                continue
+            tm = sm = n = 0
+            for tk in it.get("talks", []):
+                if tk.get("folder") in allowed_folders:
+                    tm += int(tk.get("t", 0) or 0)
+                    sm += int(tk.get("s", 0) or 0)
+                    n += 1
+            if tm or sm:
+                out.append({"name": name, "transcript": tm, "slide": sm, "talks": n})
+        out.sort(key=lambda x: (x["transcript"] + x["slide"]), reverse=True)
+        return out
+
+    return (_load(ts.SAVE_DIR / "concepts.json", "concepts"),
+            _load(ts.SAVE_DIR / "tools.json", "tools"))
 
 
 def gather_context(budget: int) -> str:
@@ -116,6 +153,23 @@ def gather_context(budget: int) -> str:
         for tp in ranked:
             parts.append(f"\n- {tp['name']} ({len(tp.get('talks', []))} talks): "
                          f"{tp.get('description', '')}")
+
+    # On-box concept/tool tallies with per-source mention counts, for the
+    # topics-and-tools occurrence table alan is asked to produce. Restricted to
+    # the approved talks so unapproved speakers never contribute a count.
+    allowed_folders = {t["folder"] for t in ts._load_talks()}
+    topic_occ, tool_occ = _load_occurrences(allowed_folders)
+    if topic_occ or tool_occ:
+        parts.append("\n=== OCCURRENCE COUNTS (for the topics-and-tools table; "
+                     "transcript vs slide mentions, most-mentioned first) ===")
+        if topic_occ:
+            parts.append("\nTOPICS/CONCEPTS  (name | transcript mentions | slide mentions | talks)")
+            for o in topic_occ:
+                parts.append(f"  {o['name']} | {o['transcript']} | {o['slide']} | {o['talks']}")
+        if tool_occ:
+            parts.append("\nTOOLS/SOFTWARE  (name | transcript mentions | slide mentions | talks)")
+            for o in tool_occ:
+                parts.append(f"  {o['name']} | {o['transcript']} | {o['slide']} | {o['talks']}")
 
     # Per-talk detail, budgeted.
     parts.append("\n=== TALKS (chronological) ===")
@@ -190,18 +244,37 @@ SYSTEM = (
     "Output ONLY a complete, self-contained LaTeX document — no markdown, no code "
     "fences, no commentary before or after. Requirements for guaranteed compilation:\n"
     "  * \\documentclass[11pt]{article}\n"
-    "  * Use ONLY these packages: geometry, parskip, enumitem, hyperref, titlesec.\n"
+    "  * Use ONLY these packages: geometry, parskip, enumitem, hyperref, titlesec, "
+    "booktabs, longtable.\n"
     "  * \\usepackage[margin=1in]{geometry}; keep it within the page budget.\n"
     f"  * Provide \\title/\\author{{{ASSISTANT} (automated rapporteur)}}/\\date and \\maketitle.\n"
     "  * Escape LaTeX special characters in any prose: % & _ # $ -> \\% \\& \\_ \\# \\$.\n"
     "  * Use \\section / \\subsection and itemize/enumerate; no figures, no \\cite, no "
     "bibliography, no custom macros, no \\input.\n"
+    "  * Tables are allowed and required (see below): use tabular or longtable with "
+    "booktabs rules (\\toprule/\\midrule/\\bottomrule); escape special characters in cells.\n"
     "Required sections, in order:\n"
     "  1. A short abstract (\\begin{abstract}) framing the meeting.\n"
     "  2. Overview of topics discussed.\n"
     "  3. Hot subjects (what dominated, what was emerging).\n"
-    "  4. Comparison with the previous year.\n"
-    "  5. Outlook for the future.\n"
+    "  4. A table of the main topics and tools with their occurrence counts (see "
+    "TABLE below).\n"
+    "  5. Comparison with the previous year.\n"
+    "  6. Outlook for the future.\n"
+    "SPEAKER COVERAGE (important): every speaker listed under '=== TALKS ===' in the "
+    "context has been approved for inclusion in this write-up. Mention EVERY ONE of them "
+    "by name at least once in the prose — weave them into the topic they spoke on. Do not "
+    "silently drop any speaker; if a talk fits only a minor theme, still name its speaker "
+    "in a grouped sentence. Use ONLY the speakers present in the context — never invent "
+    "names or attribute talks to people not listed.\n"
+    "TABLE (required): include one table titled to the effect of \"Main topics and tools "
+    "and their occurrence counts\". Build it STRICTLY from the '=== OCCURRENCE COUNTS ===' "
+    "block in the context, which gives, per topic/concept and per tool, the number of "
+    "mentions in the transcripts and in the slides. Give it columns: Topic/Tool, "
+    "Transcript mentions, Slide mentions (a Talks column is optional). List the main "
+    "entries most-mentioned first; you may group the long tail of low-count entries but do "
+    "not fabricate any counts — copy the numbers verbatim from the context. If the "
+    "OCCURRENCE COUNTS block is absent, omit the table rather than invent one.\n"
     "COVERAGE POLICY (important): aim to mention EVERY topic/theme discussed at the "
     "conference — do not silently drop any. Allocate space in PROPORTION to how much "
     "each topic was discussed: the '=== HOT TOPICS ===' list in the context is ordered "
@@ -250,6 +323,13 @@ PLAN_SYSTEM = (
     "  3. Identify the 2-4 genuinely dominant 'hot subjects', the emerging ones, and "
     "(if a previous-year booklet is provided) the clearest year-on-year shifts to "
     "foreground in the comparison.\n"
+    "  4. List EVERY speaker in the '=== TALKS ===' block (they are all approved for "
+    "inclusion) and note, for each, the topic under which the paper should name them, so "
+    "the write pass can mention every one of them.\n"
+    "  5. Note that the paper must contain a table of the main topics and tools with their "
+    "transcript- and slide-mention counts, taken verbatim from the '=== OCCURRENCE COUNTS "
+    "==='  block; identify which entries are the main ones and which form the low-count "
+    "tail that can be grouped.\n"
     "Output a concise plain-text outline. Ground everything strictly in the context; do "
     "not invent topics, names, results or counts."
 )
@@ -353,10 +433,28 @@ def main():
     if args.model:
         ts.LLM_MODEL = args.model
 
+    # Fail-closed permission gate: only speakers who gave explicit permission
+    # (listed in public_talks.txt) are ever seen. This monkeypatches
+    # ts._load_talks, so EVERY downstream consumer — context, day/topic caches
+    # and the occurrence table — is restricted to approved talks. A missing or
+    # empty allowlist aborts rather than leaking an unapproved speaker.
+    es.apply_allowlist(verbose=True)
+    talks = ts._load_talks()
+    print(f"Permission allowlist: {len(talks)} approved talk(s) will be included.")
+
     if args.refresh:
-        print("Refreshing day overviews + topic synthesis ...")
-        subprocess.run([sys.executable, "backfill_day_summaries.py", "--force"], cwd=ROOT)
-        subprocess.run([sys.executable, "backfill_topics.py", "--force"], cwd=ROOT)
+        # Force day/topic syntheses to rebuild over the APPROVED set only (the
+        # subprocess backfills would rebuild over every talk on disk, so we drop
+        # the caches and let ensure_caches regenerate them from the filtered talks).
+        print("Refreshing day overviews + topic synthesis (approved talks only) ...")
+        for p in ts.DAYS_DIR.glob("*.json"):
+            p.unlink()
+        if ts.TOPICS_PATH.exists():
+            ts.TOPICS_PATH.unlink()
+    # Rebuild any stale day/topic caches over the approved set. The talk-set
+    # signature changes when the allowlist excludes talks, so caches previously
+    # built over all talks regenerate here rather than leak unapproved content.
+    es.ensure_caches(talks, use_llm=True, strict=False, verbose=True)
 
     print(f"Assembling meeting context (via {ts.LLM_MODEL} at {ts.LLM_URL}) ...")
     context = gather_context(args.budget)

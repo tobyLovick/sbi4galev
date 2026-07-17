@@ -61,9 +61,10 @@ EXTRACT_SYSTEM = (
     "inference (SBI) — as a concept; it applies to essentially every talk. List the "
     "specific methods and terms used WITHIN it.\n\n"
     "tools = named software packages, codes, frameworks or pipelines (e.g. sbi, "
-    "swyft, lampe, emcee, JAX, numpyro) AND named simulation suites / simulation "
-    "datasets used as data or training sets (e.g. CAMELS, IllustrisTNG, SIMBA, "
-    "EAGLE, Magneticum, FLAMINGO, UniverseMachine, L-Galaxies). Include both kinds "
+    "swyft, lampe, emcee, JAX, numpyro, pop-cosmos) AND named simulation suites / "
+    "simulation datasets used as data or training sets (e.g. CAMELS, IllustrisTNG, "
+    "SIMBA, EAGLE, Magneticum, FLAMINGO, UniverseMachine, L-Galaxies, pop-cosmos). "
+    "Include both kinds "
     "in this one list. Each: "
     '{"name": "<canonical name>", "aliases": ["<spellings used>", ...], '
     '"url": "<official site or repo if you are confident, else \'\'>", '
