@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SBI4GALEV — White paper</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background:#0a0a0a; color:#e6e6e6; font-family:sans-serif; font-size:16.5px;
+        line-height:1.5; padding:48px 20px 96px; }
+    .wrap { max-width:860px; margin:0 auto; }
+    header.top { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:2em; }
+    header.top h1 { font-size:1.5em; font-weight:600; letter-spacing:0.5px; color:#fff; }
+    header.top .navlinks a { color:#9ec9b0; font-size:0.95em; letter-spacing:0.5px;
+        text-decoration:none; margin-left:20px; }
+    header.top .navlinks a:hover { color:#fff; }
+    .day { padding:28px 0; border-top:1px solid #1a1a1a; }
+    .day-head { display:flex; align-items:baseline; gap:14px; margin-bottom:0.2em; }
+    .day-head h2 { font-size:1.15em; font-weight:700; color:#fff; letter-spacing:0.5px; }
+    .day-head .date { color:#777; font-size:0.8em; }
+    .day-head .count { color:#555; font-size:0.72em; letter-spacing:1px; margin-left:auto; }
+    .day-overview { color:#dcdcdc; line-height:1.7; margin:0.7em 0 0.9em; font-size:1.03em; }
+    .day-thumbs { display:flex; gap:8px; overflow:hidden; margin:0.6em 0 0.9em; }
+    .day-thumbs img { height:74px; border:1px solid #222; border-radius:4px; display:block; }
+    .day-talklist { list-style:none; margin:0.4em 0 0; padding:0; }
+    .day-talklist li { padding:5px 0; border-top:1px solid #141414; font-size:0.92em; }
+    .day-talklist a { color:#cdd; text-decoration:none; }
+    .day-talklist a:hover { color:#fff; }
+    .day-talklist .who { color:#777; font-size:0.85em; }
+    .day-more { display:inline-block; margin-top:0.9em; color:#6a8; font-size:0.8em;
+                text-decoration:none; letter-spacing:0.5px; }
+    .day-more:hover { text-decoration:underline; }
+    .day-page-overview { color:#dcdcdc; line-height:1.8; margin:0.4em 0 0.6em; font-size:1.1em; }
+    .day-nav { display:flex; justify-content:space-between; gap:16px; margin-top:52px;
+        padding-top:30px; border-top:1px solid #1a1a1a; }
+    .day-nav a { display:flex; flex-direction:column; gap:3px; color:#cdd; text-decoration:none;
+        padding:12px 20px; border:1px solid #1f1f1f; border-radius:8px; background:#0e0e0e;
+        transition:border-color 0.15s, background 0.15s; }
+    .day-nav a:hover { border-color:#3a5a48; background:#101410; }
+    .day-nav .next { margin-left:auto; text-align:right; }
+    .day-nav .dn-dir { color:#9ec9b0; font-size:0.8em; letter-spacing:1px; text-transform:uppercase; }
+    .day-nav a:hover .dn-dir { color:#fff; }
+    .day-nav .dn-day { color:#fff; font-size:1.1em; font-weight:600; }
+    .card { display:flex; gap:20px; padding:24px 0; border-top:1px solid #1a1a1a; }
+    .card .thumb { flex:0 0 200px; position:relative; display:block; cursor:zoom-in; }
+    .card .thumb img { width:100%; border:1px solid #222; border-radius:6px; display:block;
+        transition:border-color 0.15s; }
+    .card .thumb:hover img { border-color:#3a5a48; }
+    .card .thumb .thumb-count { position:absolute; bottom:8px; right:8px; color:#fff;
+        background:rgba(0,0,0,0.72); font-size:0.72em; letter-spacing:0.5px; padding:3px 8px;
+        border-radius:5px; pointer-events:none; }
+    .card .thumb-none { flex:0 0 200px; align-self:flex-start; height:120px; display:flex;
+        align-items:center; justify-content:center; text-align:center; color:#666;
+        font-size:0.82em; border:1px dashed #2c2c2c; border-radius:6px; background:#0e0e0e; }
+    .cap-notes { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 0.8em; }
+    .cap-note { font-size:0.72em; letter-spacing:0.5px; color:#d2a24c; border:1px solid #3a3326;
+        background:#1a1710; border-radius:10px; padding:2px 9px; }
+    .card-body { flex:1; min-width:0; }
+    .card h2 { font-size:1.05em; font-weight:600; color:#fff; margin-bottom:0.2em; }
+    .when { color:#555; font-size:0.7em; letter-spacing:1px; margin-bottom:0.9em; }
+    .speaker { color:#9a9; font-size:0.85em; margin-bottom:0.6em; }
+    .abstract { color:#cccccc; line-height:1.7; margin-bottom:0.8em; }
+    .official-abstract { margin:0 0 0.8em 0; }
+    .official-abstract > summary { color:#7fa7d6; cursor:pointer; font-size:0.85em;
+        text-transform:uppercase; letter-spacing:0.04em; }
+    .official-abstract > p { color:#9a9a9a; line-height:1.65; margin:0.5em 0 0; }
+    .card ul { margin:0 0 0.8em 1.1em; color:#9a9a9a; line-height:1.6; }
+    .topics { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:0.8em; }
+    .topics span { font-size:0.65em; letter-spacing:1px; color:#777; border:1px solid #262626;
+                    border-radius:10px; padding:2px 9px; }
+    .links { font-size:0.72em; color:#555; }
+    .links a { color:#6a8; text-decoration:none; }
+    .links a:hover { text-decoration:underline; }
+    .pending { color:#666; font-style:italic; }
+    .empty { color:#555; text-align:center; padding:60px 0; }
+    .related { font-size:0.75em; color:#777; margin:0.2em 0 0.9em; }
+    .related a { color:#6a8; text-decoration:none; }
+    .related a:hover { text-decoration:underline; }
+    details.qbox { margin:0.2em 0 0.9em; }
+    details.qbox > summary { cursor:pointer; color:#9a9; font-size:0.8em; letter-spacing:0.5px;
+        list-style:none; user-select:none; }
+    details.qbox > summary::-webkit-details-marker { display:none; }
+    details.qbox > summary::before { content:'▸ '; color:#555; }
+    details.qbox[open] > summary::before { content:'▾ '; }
+    ol.questions { list-style:none; margin:0.7em 0 0; padding:0; }
+    li.question { display:flex; gap:12px; align-items:flex-start; padding:8px 0;
+        border-top:1px solid #161616; }
+    .qtext { flex:1; color:#ccc; line-height:1.5; font-size:0.92em; }
+    .qvote { display:flex; gap:6px; flex:0 0 auto; }
+    .vb { background:#111; border:1px solid #222; color:#888; border-radius:4px;
+        padding:3px 9px; font-size:0.8em; cursor:pointer; white-space:nowrap; }
+    .vb:hover { border-color:#444; color:#ccc; }
+    .vb.up.on { color:#4a4; border-color:#4a4; }
+    .vb.down.on { color:#b55; border-color:#b55; }
+    .vb em { font-style:normal; }
+    .topics-meta { color:#666; font-size:0.75em; letter-spacing:0.5px; margin:0.4em 0 1.6em; }
+    .topics-meta .timer { color:#9a9; font-variant-numeric:tabular-nums; }
+    #topic-graph-wrap { position:relative; margin:0.4em 0 2.2em; }
+    #topic-graph { width:100%; height:460px; display:block; background:#0c0c0c;
+        border:1px solid #1a1a1a; border-radius:8px; cursor:grab; touch-action:none; }
+    #topic-graph.dragging { cursor:grabbing; }
+    .graph-hint { position:absolute; top:10px; right:14px; color:#3d3d3d; font-size:0.66em;
+        letter-spacing:1px; pointer-events:none; }
+    .tcard { padding:18px 0; border-top:1px solid #1a1a1a; }
+    .tcard.flash { animation:tflash 1.1s ease; }
+    @keyframes tflash { from { background:#181818; } to { background:transparent; } }
+    .tcard h2 { font-size:1.02em; font-weight:600; color:#fff; margin-bottom:0.25em;
+        display:flex; align-items:baseline; gap:10px; }
+    .tcard h2 .n { color:#555; font-size:0.62em; font-weight:400; letter-spacing:1px; }
+    .tcard .tdesc { color:#bbb; line-height:1.65; margin-bottom:0.5em; }
+    .tcard .tkw { color:#5f5f5f; font-size:0.72em; letter-spacing:0.5px; margin-bottom:0.5em; }
+    .tcard .ttalks { list-style:none; margin:0; padding:0; }
+    .tcard .ttalks li { padding:3px 0; font-size:0.9em; }
+    .tcard .ttalks a { color:#cdd; text-decoration:none; }
+    .tcard .ttalks a:hover { color:#fff; }
+    .generating { text-align:center; color:#888; padding:72px 0; }
+    .generating .timer { font-size:2.3em; color:#cdd; font-variant-numeric:tabular-nums;
+        display:block; margin:0.35em 0; letter-spacing:1px; }
+    .generating .sub { font-size:0.78em; color:#555; letter-spacing:1px; }
+    .spinner { display:inline-block; width:13px; height:13px; border:2px solid #2c2c2c;
+        border-top-color:#9a9; border-radius:50%; animation:spin 0.8s linear infinite;
+        vertical-align:middle; margin-right:8px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    /* Slide lightbox */
+    .lb { position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:1000;
+        display:none; flex-direction:column; }
+    .lb.open { display:flex; }
+    .lb-top { display:flex; align-items:center; justify-content:space-between;
+        padding:16px 22px; color:#cdd; font-size:0.9em; letter-spacing:0.5px; }
+    .lb-title { color:#fff; font-weight:600; max-width:80%; overflow:hidden;
+        text-overflow:ellipsis; white-space:nowrap; }
+    .lb-close { background:none; border:none; color:#9ec9b0; font-size:1.8em; line-height:1;
+        cursor:pointer; padding:0 6px; }
+    .lb-close:hover { color:#fff; }
+    .lb-stage { flex:1; display:flex; align-items:center; justify-content:center;
+        gap:12px; padding:0 16px 8px; min-height:0; }
+    .lb-stage img { max-width:100%; max-height:100%; object-fit:contain;
+        border:1px solid #222; border-radius:6px; }
+    .lb-nav { background:rgba(255,255,255,0.06); border:1px solid #2a2a2a; color:#fff;
+        font-size:1.6em; line-height:1; cursor:pointer; border-radius:8px; padding:14px 18px;
+        flex:0 0 auto; user-select:none; }
+    .lb-nav:hover { background:rgba(158,201,176,0.18); border-color:#3a5a48; }
+    .lb-nav[disabled] { opacity:0.25; cursor:default; }
+    .lb-count { text-align:center; color:#888; font-size:0.85em; padding:6px 0 18px;
+        letter-spacing:1px; font-variant-numeric:tabular-nums; }</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top"><h1>White paper</h1><div class="navlinks"><a href="index.html">home</a><a href="methods.html">methods</a><a href="tools.html">tools</a><a href="whitepaper.html">white paper</a><a href="summaries.html">day summaries</a><a href="topics.html">key topics</a></div></header>
+    <style>
+    .wp-intro { color:#9a9a9a; line-height:1.7; margin:0 0 1.3em; max-width:72ch; }
+    .wp-actions { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin:0 0 0.4em; }
+    .wp-dl { display:inline-flex; align-items:center; gap:9px; color:#9ec9b0; font-size:0.98em;
+        text-decoration:none; border:1px solid #3a5a48; border-radius:8px; padding:10px 18px; }
+    .wp-dl:hover { background:#101410; color:#fff; }
+    .wp-dl .arr { font-size:1.05em; line-height:1; }
+    .wp-meta { color:#5c5c5c; font-size:0.78em; letter-spacing:0.5px; }
+    .paper { margin-top:2.2em; padding-top:1.9em; border-top:1px solid #1a1a1a; }
+    .paper #title-block-header { margin-bottom:1.7em; }
+    .paper #title-block-header .title { font-size:1.85em; font-weight:700; color:#fff;
+        line-height:1.25; letter-spacing:0.2px; margin:0 0 0.3em; padding:0; border:none; }
+    .paper .author { color:#9a9; font-size:0.95em; margin:0; }
+    .paper .date { color:#666; font-size:0.75em; letter-spacing:1.5px; text-transform:uppercase;
+        margin:0.35em 0 0; }
+    .paper .abstract { margin:1.5em 0 0; padding:1.15em 1.35em; background:#0e0e0e;
+        border:1px solid #1f1f1f; border-radius:9px; }
+    .paper .abstract-title { color:#9ec9b0; font-size:0.72em; font-weight:600; letter-spacing:1.5px;
+        text-transform:uppercase; margin-bottom:0.55em; }
+    .paper .abstract p { color:#cccccc; line-height:1.7; margin:0; }
+    .paper h2 { font-size:1.22em; font-weight:700; color:#fff; letter-spacing:0.2px;
+        margin:1.9em 0 0.55em; padding-top:1.3em; border-top:1px solid #161616; }
+    .paper h3 { font-size:1.05em; font-weight:600; color:#fff; margin:1.4em 0 0.4em; }
+    .paper p { color:#dcdcdc; line-height:1.78; margin:0 0 1em; }
+    .paper strong { color:#fff; font-weight:600; }
+    .paper ul, .paper ol { margin:0 0 1em 1.3em; color:#cfcfcf; line-height:1.75; }
+    .paper li { margin-bottom:0.3em; }
+    .paper .table-wrap { overflow-x:auto; margin:1.3em 0 1.7em; }
+    .paper table { width:100%; border-collapse:collapse; font-size:0.9em; }
+    .paper caption { color:#888; font-size:0.86em; text-align:left; letter-spacing:0.3px;
+        margin-bottom:0.65em; }
+    .paper th { color:#9ec9b0; font-weight:600; padding:8px 13px; border-bottom:1px solid #2c2c2c;
+        white-space:nowrap; }
+    .paper td { color:#cfcfcf; padding:7px 13px; border-bottom:1px solid #151515; }
+    .paper tbody tr:hover td { background:#0e0e0e; }
+</style><p class="wp-intro">The AI-generated summary white paper for SBI4GALEV 2026 — a concise synthesis of the meeting written automatically by the local, on-device assistant from the talk archive. Read the full text below, or download the typeset PDF.</p><div class="wp-actions"><a class="wp-dl" href="whitepaper.pdf"><span class="arr">&#8681;</span> Download PDF</a><div class="wp-meta">Generated 17 July 2026 · written on-device by alan</div></div><article class="paper"><header id="title-block-header">
+<h1 class="title">SBI4GALEV 2026: Summary White Paper</h1>
+<p class="author">alan (automated rapporteur)</p>
+<p class="date">June 2026</p>
+<div class="abstract">
+<div class="abstract-title">Abstract</div>
+<p>The Simulation-Based Inference for Galaxy Evolution (SBI4GALEV) 2026
+conference convened researchers to address the computational and
+statistical challenges of connecting complex astrophysical simulations
+with next-generation observational data. The meeting highlighted a
+transition from the introductory phase of Simulation-Based Inference
+(SBI) toward high-performance implementation, emphasizing differentiable
+programming, generative AI, and the mitigation of the “simulation
+bottleneck.” Discussions spanned scales from the interstellar medium to
+cosmological large-scale structure, establishing a roadmap for scalable,
+robust, and amortized inference pipelines.</p>
+</div>
+</header>
+<h2 id="overview-of-topics">Overview of Topics</h2>
+<p>The conference was characterized by a multidisciplinary approach to
+the inverse problem in astrophysics. The primary focus remained on
+<strong>Simulation-Based Inference (SBI) and Likelihood-Free Inference
+(LFI)</strong>, with Tom providing a foundational overview of neural
+estimation techniques and model validation. This methodological core
+supported extensive research into <strong>Galaxy Evolution and
+Formation</strong>, where Christian Kragh Jespersen, Subhrata Dey, and
+Jonah Rose explored the physical drivers of galaxy growth and
+morphology.</p>
+<p>A significant portion of the program was dedicated to
+<strong>Cosmological Inference</strong> and <strong>Bayesian
+Methods</strong>, with Hiranya Peiris and Alex Saoulis discussing
+large-scale structure and weak lensing, while Johannes Buchner compared
+the efficiencies of HMC, Nested Sampling, and SBI. The integration of
+<strong>Deep Learning and Generative AI</strong> was pervasive,
+featuring work on diffusion models by Stephen Thorp, Lawrence Faria, and
+Yichen Zang, as well as GNNs and foundation models presented by
+Ming-Shau Liu and Eduardo A. Hartmann.</p>
+<p>Further technical discussions focused on <strong>Astrophysical
+Simulations</strong> and <strong>SED Modeling</strong>, with Patricia
+Iglesias-Navarro, Amanda Stoffers, and Stephen Ramnichal presenting
+advanced frameworks for spectral analysis. The meeting also covered
+<strong>Observational Constraints</strong> (James Kostas Ray), the
+<strong>Interstellar and Circumgalactic Medium</strong> (Caterina
+Bracci, Tanmay Singh), <strong>Multi-Fidelity Modeling</strong> (Richard
+Stiskalek, M. von Wietersheim), and <strong>Differentiable
+Programming</strong> (Suchetha Cooray, Andrew Green). Niche applications
+included <strong>Gravitational Waves</strong> (Philippa Cole),
+<strong>Galactic Archaeology</strong> (Shichen Su), and <strong>AI
+Infrastructure</strong> (Grant Stevens, Sotiria Fotopoulou, Chris
+Lovell).</p>
+<h2 id="hot-subjects-and-emerging-trends">Hot Subjects and Emerging
+Trends</h2>
+<p>The dominant theme of the 2026 meeting was the shift toward
+<strong>Generative AI and Diffusion Models</strong>. Rather than simple
+regression, researchers like Grégoire Aufort and Yichen Zang are
+utilizing score-based diffusion for priors and inpainting to handle
+missing data in SED fitting and light curves.</p>
+<p><strong>Differentiable Forward Modeling</strong> emerged as a
+critical efficiency driver. The adoption of JAX-based frameworks, such
+as Ceridwen (Amanda Stoffers) and Tengri (Suchetha Cooray), allows for
+automatic differentiation (AD) and gradient-based sampling,
+significantly reducing the wall-clock time for high-dimensional
+inference.</p>
+<p><strong>Amortized Inference Scaling</strong> has moved from
+proof-of-concept to production. The development of tools like Synference
+(Thomas Harvey) and SBIPIX (Patricia Iglesias-Navarro) demonstrates the
+ability to perform pixel-level or population-scale inference on billions
+of galaxies, bypassing the per-object cost of traditional MCMC.</p>
+<p>Finally, <strong>Robustness and Model Misspecification</strong>
+became a central concern. Sherman Khoo and Arya Farahi presented methods
+using Maximum Mean Discrepancy (MMD) and generalized Bayes frameworks to
+ensure that neural estimators remain calibrated even when simulations
+deviate from real-world observations.</p>
+<h2 id="main-topics-and-tools-occurrence">Main Topics and Tools
+Occurrence</h2>
+<p>The following table summarizes the frequency of key concepts and
+software mentioned across the conference transcripts and slides.</p>
+<div class="table-wrap"><table>
+<caption>Main topics and tools and their occurrence counts</caption>
+<thead>
+<tr>
+<th style="text-align: left;">Topic/Tool</th>
+<th style="text-align: center;">Transcript mentions</th>
+<th style="text-align: center;">Slide mentions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Topics/Concepts</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Spectral Energy Distribution Fitting</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">18</td>
+</tr>
+<tr>
+<td style="text-align: left;">Neural Posterior Estimation</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">10</td>
+</tr>
+<tr>
+<td style="text-align: left;">Diffusion Models</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr>
+<td style="text-align: left;">Normalizing Flows</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">Hamiltonian Monte Carlo</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr>
+<td style="text-align: left;">Maximum Mean Discrepancy</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr>
+<td style="text-align: left;">Neural Likelihood Estimation</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr>
+<td style="text-align: left;">Nested Sampling</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr>
+<td style="text-align: left;">Automatic Differentiation</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td style="text-align: left;">Neural Ratio Estimation</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr>
+<td style="text-align: left;">Simulation-Based Calibration</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tools/Software</strong></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">sbi</td>
+<td style="text-align: center;">24</td>
+<td style="text-align: center;">41</td>
+</tr>
+<tr>
+<td style="text-align: left;">Synthesizer</td>
+<td style="text-align: center;">18</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr>
+<td style="text-align: left;">Synference</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">16</td>
+</tr>
+<tr>
+<td style="text-align: left;">DREAMS</td>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">11</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tengri</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">IllustrisTNG</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">8</td>
+</tr>
+<tr>
+<td style="text-align: left;">Bagpipes</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cloudy</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">OASIS</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td style="text-align: left;">UNiverse Machine</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr>
+<td style="text-align: left;">L-Galaxies</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr>
+<td style="text-align: left;">Ceridwen</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr>
+<td style="text-align: left;">JAX</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr>
+<td style="text-align: left;">Open WebUI</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">Other (SIMBA, pop-cosmos, etc.)</td>
+<td style="text-align: center;"><span class="math inline">∼</span>1</td>
+<td style="text-align: center;"><span
+class="math inline">∼</span>10</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="comparison-with-previous-year">Comparison with Previous
+Year</h2>
+<p>Comparing the 2026 program to the 2025 abstract booklet reveals a
+clear evolution from <em>introduction</em> to <em>implementation</em>.
+While the 2025 meeting focused on basic tutorials (e.g., “Introduction
+to SBI,” “A Brief Introduction to JAX”), the 2026 meeting centered on
+specific, high-performance frameworks like Ceridwen, Synference, and
+OASIS.</p>
+<p>Methodologically, there is a marked shift in generative modeling.
+2025 emphasized Invertible Neural Networks (cINNs) and basic Normalizing
+Flows; 2026 is dominated by Diffusion Models and Flow-Matching.
+Furthermore, the scope of SED fitting has expanded from integrated
+properties to 3D resolved modeling and pixel-level inference. Finally,
+the 2026 meeting introduced a stronger focus on robustness and the
+“simulation bottleneck,” moving beyond the question of <em>how</em> to
+run SBI to <em>how to make it reliable</em> under model
+misspecification.</p>
+<h2 id="outlook-for-the-future">Outlook for the Future</h2>
+<p>The community is moving toward a unified, differentiable pipeline
+where the simulator and the inference engine are tightly integrated. The
+proposed community data challenge led by Luca and Chris Lovell will be
+pivotal in benchmarking these tools against realistic, misspecified
+data. Future efforts will likely focus on “foundation models” for galaxy
+spectra and the deployment of ambient, self-hosted AI (as discussed by
+Sotiria Fotopoulou and Chris Lovell) to accelerate academic synthesis
+and education. The ultimate goal remains the scaling of these methods to
+Stage-IV surveys, enabling the transition from fitting individual
+galaxies to performing field-level cosmological inference.</p></article>
+  </div>
+  
+  <script>
+(function () {
+  var slides = [], idx = 0, title = "";
+  var lb = document.createElement('div');
+  lb.className = 'lb';
+  lb.innerHTML =
+    '<div class="lb-top"><span class="lb-title"></span>'
+    + '<button class="lb-close" aria-label="Close">&times;</button></div>'
+    + '<div class="lb-stage"><button class="lb-nav lb-prev" aria-label="Previous">&#8249;</button>'
+    + '<img alt="slide">'
+    + '<button class="lb-nav lb-next" aria-label="Next">&#8250;</button></div>'
+    + '<div class="lb-count"></div>';
+  document.body.appendChild(lb);
+  var img = lb.querySelector('img'), stage = lb.querySelector('.lb-stage'),
+      elTitle = lb.querySelector('.lb-title'), elCount = lb.querySelector('.lb-count'),
+      btnPrev = lb.querySelector('.lb-prev'), btnNext = lb.querySelector('.lb-next');
+  function show() {
+    img.src = slides[idx];
+    elTitle.textContent = title;
+    elCount.textContent = (idx + 1) + ' / ' + slides.length;
+    btnPrev.disabled = idx <= 0;
+    btnNext.disabled = idx >= slides.length - 1;
+  }
+  function open(arr, t, start) {
+    if (!arr || !arr.length) return;
+    slides = arr; title = t || ''; idx = start || 0;
+    lb.classList.add('open'); show();
+  }
+  function close() { lb.classList.remove('open'); img.src = ''; }
+  function go(d) { idx = Math.max(0, Math.min(slides.length - 1, idx + d)); show(); }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a.thumb'); if (!a) return;
+    var data = a.getAttribute('data-slides'); if (!data) return;
+    var arr; try { arr = JSON.parse(data); } catch (_) { return; }
+    if (!arr.length) return;
+    e.preventDefault(); open(arr, a.getAttribute('data-title'), 0);
+  });
+  btnPrev.addEventListener('click', function () { go(-1); });
+  btnNext.addEventListener('click', function () { go(1); });
+  lb.querySelector('.lb-close').addEventListener('click', close);
+  lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
+  stage.addEventListener('click', function (e) { if (e.target === stage) close(); });
+  document.addEventListener('keydown', function (e) {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') go(-1);
+    else if (e.key === 'ArrowRight') go(1);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SBI4GALEV — Key topics</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background:#0a0a0a; color:#e6e6e6; font-family:sans-serif; font-size:16.5px;
+        line-height:1.5; padding:48px 20px 96px; }
+    .wrap { max-width:860px; margin:0 auto; }
+    header.top { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:2em; }
+    header.top h1 { font-size:1.5em; font-weight:600; letter-spacing:0.5px; color:#fff; }
+    header.top .navlinks a { color:#9ec9b0; font-size:0.95em; letter-spacing:0.5px;
+        text-decoration:none; margin-left:20px; }
+    header.top .navlinks a:hover { color:#fff; }
+    .day { padding:28px 0; border-top:1px solid #1a1a1a; }
+    .day-head { display:flex; align-items:baseline; gap:14px; margin-bottom:0.2em; }
+    .day-head h2 { font-size:1.15em; font-weight:700; color:#fff; letter-spacing:0.5px; }
+    .day-head .date { color:#777; font-size:0.8em; }
+    .day-head .count { color:#555; font-size:0.72em; letter-spacing:1px; margin-left:auto; }
+    .day-overview { color:#dcdcdc; line-height:1.7; margin:0.7em 0 0.9em; font-size:1.03em; }
+    .day-thumbs { display:flex; gap:8px; overflow:hidden; margin:0.6em 0 0.9em; }
+    .day-thumbs img { height:74px; border:1px solid #222; border-radius:4px; display:block; }
+    .day-talklist { list-style:none; margin:0.4em 0 0; padding:0; }
+    .day-talklist li { padding:5px 0; border-top:1px solid #141414; font-size:0.92em; }
+    .day-talklist a { color:#cdd; text-decoration:none; }
+    .day-talklist a:hover { color:#fff; }
+    .day-talklist .who { color:#777; font-size:0.85em; }
+    .day-more { display:inline-block; margin-top:0.9em; color:#6a8; font-size:0.8em;
+                text-decoration:none; letter-spacing:0.5px; }
+    .day-more:hover { text-decoration:underline; }
+    .day-page-overview { color:#dcdcdc; line-height:1.8; margin:0.4em 0 0.6em; font-size:1.1em; }
+    .day-nav { display:flex; justify-content:space-between; gap:16px; margin-top:52px;
+        padding-top:30px; border-top:1px solid #1a1a1a; }
+    .day-nav a { display:flex; flex-direction:column; gap:3px; color:#cdd; text-decoration:none;
+        padding:12px 20px; border:1px solid #1f1f1f; border-radius:8px; background:#0e0e0e;
+        transition:border-color 0.15s, background 0.15s; }
+    .day-nav a:hover { border-color:#3a5a48; background:#101410; }
+    .day-nav .next { margin-left:auto; text-align:right; }
+    .day-nav .dn-dir { color:#9ec9b0; font-size:0.8em; letter-spacing:1px; text-transform:uppercase; }
+    .day-nav a:hover .dn-dir { color:#fff; }
+    .day-nav .dn-day { color:#fff; font-size:1.1em; font-weight:600; }
+    .card { display:flex; gap:20px; padding:24px 0; border-top:1px solid #1a1a1a; }
+    .card .thumb { flex:0 0 200px; position:relative; display:block; cursor:zoom-in; }
+    .card .thumb img { width:100%; border:1px solid #222; border-radius:6px; display:block;
+        transition:border-color 0.15s; }
+    .card .thumb:hover img { border-color:#3a5a48; }
+    .card .thumb .thumb-count { position:absolute; bottom:8px; right:8px; color:#fff;
+        background:rgba(0,0,0,0.72); font-size:0.72em; letter-spacing:0.5px; padding:3px 8px;
+        border-radius:5px; pointer-events:none; }
+    .card .thumb-none { flex:0 0 200px; align-self:flex-start; height:120px; display:flex;
+        align-items:center; justify-content:center; text-align:center; color:#666;
+        font-size:0.82em; border:1px dashed #2c2c2c; border-radius:6px; background:#0e0e0e; }
+    .cap-notes { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 0.8em; }
+    .cap-note { font-size:0.72em; letter-spacing:0.5px; color:#d2a24c; border:1px solid #3a3326;
+        background:#1a1710; border-radius:10px; padding:2px 9px; }
+    .card-body { flex:1; min-width:0; }
+    .card h2 { font-size:1.05em; font-weight:600; color:#fff; margin-bottom:0.2em; }
+    .when { color:#555; font-size:0.7em; letter-spacing:1px; margin-bottom:0.9em; }
+    .speaker { color:#9a9; font-size:0.85em; margin-bottom:0.6em; }
+    .abstract { color:#cccccc; line-height:1.7; margin-bottom:0.8em; }
+    .official-abstract { margin:0 0 0.8em 0; }
+    .official-abstract > summary { color:#7fa7d6; cursor:pointer; font-size:0.85em;
+        text-transform:uppercase; letter-spacing:0.04em; }
+    .official-abstract > p { color:#9a9a9a; line-height:1.65; margin:0.5em 0 0; }
+    .card ul { margin:0 0 0.8em 1.1em; color:#9a9a9a; line-height:1.6; }
+    .topics { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:0.8em; }
+    .topics span { font-size:0.65em; letter-spacing:1px; color:#777; border:1px solid #262626;
+                    border-radius:10px; padding:2px 9px; }
+    .links { font-size:0.72em; color:#555; }
+    .links a { color:#6a8; text-decoration:none; }
+    .links a:hover { text-decoration:underline; }
+    .pending { color:#666; font-style:italic; }
+    .empty { color:#555; text-align:center; padding:60px 0; }
+    .related { font-size:0.75em; color:#777; margin:0.2em 0 0.9em; }
+    .related a { color:#6a8; text-decoration:none; }
+    .related a:hover { text-decoration:underline; }
+    details.qbox { margin:0.2em 0 0.9em; }
+    details.qbox > summary { cursor:pointer; color:#9a9; font-size:0.8em; letter-spacing:0.5px;
+        list-style:none; user-select:none; }
+    details.qbox > summary::-webkit-details-marker { display:none; }
+    details.qbox > summary::before { content:'▸ '; color:#555; }
+    details.qbox[open] > summary::before { content:'▾ '; }
+    ol.questions { list-style:none; margin:0.7em 0 0; padding:0; }
+    li.question { display:flex; gap:12px; align-items:flex-start; padding:8px 0;
+        border-top:1px solid #161616; }
+    .qtext { flex:1; color:#ccc; line-height:1.5; font-size:0.92em; }
+    .qvote { display:flex; gap:6px; flex:0 0 auto; }
+    .vb { background:#111; border:1px solid #222; color:#888; border-radius:4px;
+        padding:3px 9px; font-size:0.8em; cursor:pointer; white-space:nowrap; }
+    .vb:hover { border-color:#444; color:#ccc; }
+    .vb.up.on { color:#4a4; border-color:#4a4; }
+    .vb.down.on { color:#b55; border-color:#b55; }
+    .vb em { font-style:normal; }
+    .topics-meta { color:#666; font-size:0.75em; letter-spacing:0.5px; margin:0.4em 0 1.6em; }
+    .topics-meta .timer { color:#9a9; font-variant-numeric:tabular-nums; }
+    #topic-graph-wrap { position:relative; margin:0.4em 0 2.2em; }
+    #topic-graph { width:100%; height:460px; display:block; background:#0c0c0c;
+        border:1px solid #1a1a1a; border-radius:8px; cursor:grab; touch-action:none; }
+    #topic-graph.dragging { cursor:grabbing; }
+    .graph-hint { position:absolute; top:10px; right:14px; color:#3d3d3d; font-size:0.66em;
+        letter-spacing:1px; pointer-events:none; }
+    .tcard { padding:18px 0; border-top:1px solid #1a1a1a; }
+    .tcard.flash { animation:tflash 1.1s ease; }
+    @keyframes tflash { from { background:#181818; } to { background:transparent; } }
+    .tcard h2 { font-size:1.02em; font-weight:600; color:#fff; margin-bottom:0.25em;
+        display:flex; align-items:baseline; gap:10px; }
+    .tcard h2 .n { color:#555; font-size:0.62em; font-weight:400; letter-spacing:1px; }
+    .tcard .tdesc { color:#bbb; line-height:1.65; margin-bottom:0.5em; }
+    .tcard .tkw { color:#5f5f5f; font-size:0.72em; letter-spacing:0.5px; margin-bottom:0.5em; }
+    .tcard .ttalks { list-style:none; margin:0; padding:0; }
+    .tcard .ttalks li { padding:3px 0; font-size:0.9em; }
+    .tcard .ttalks a { color:#cdd; text-decoration:none; }
+    .tcard .ttalks a:hover { color:#fff; }
+    .generating { text-align:center; color:#888; padding:72px 0; }
+    .generating .timer { font-size:2.3em; color:#cdd; font-variant-numeric:tabular-nums;
+        display:block; margin:0.35em 0; letter-spacing:1px; }
+    .generating .sub { font-size:0.78em; color:#555; letter-spacing:1px; }
+    .spinner { display:inline-block; width:13px; height:13px; border:2px solid #2c2c2c;
+        border-top-color:#9a9; border-radius:50%; animation:spin 0.8s linear infinite;
+        vertical-align:middle; margin-right:8px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    /* Slide lightbox */
+    .lb { position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:1000;
+        display:none; flex-direction:column; }
+    .lb.open { display:flex; }
+    .lb-top { display:flex; align-items:center; justify-content:space-between;
+        padding:16px 22px; color:#cdd; font-size:0.9em; letter-spacing:0.5px; }
+    .lb-title { color:#fff; font-weight:600; max-width:80%; overflow:hidden;
+        text-overflow:ellipsis; white-space:nowrap; }
+    .lb-close { background:none; border:none; color:#9ec9b0; font-size:1.8em; line-height:1;
+        cursor:pointer; padding:0 6px; }
+    .lb-close:hover { color:#fff; }
+    .lb-stage { flex:1; display:flex; align-items:center; justify-content:center;
+        gap:12px; padding:0 16px 8px; min-height:0; }
+    .lb-stage img { max-width:100%; max-height:100%; object-fit:contain;
+        border:1px solid #222; border-radius:6px; }
+    .lb-nav { background:rgba(255,255,255,0.06); border:1px solid #2a2a2a; color:#fff;
+        font-size:1.6em; line-height:1; cursor:pointer; border-radius:8px; padding:14px 18px;
+        flex:0 0 auto; user-select:none; }
+    .lb-nav:hover { background:rgba(158,201,176,0.18); border-color:#3a5a48; }
+    .lb-nav[disabled] { opacity:0.25; cursor:default; }
+    .lb-count { text-align:center; color:#888; font-size:0.85em; padding:6px 0 18px;
+        letter-spacing:1px; font-variant-numeric:tabular-nums; }</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top"><h1>Key topics</h1><div class="navlinks"><a href="index.html">home</a><a href="methods.html">methods</a><a href="tools.html">tools</a><a href="whitepaper.html">white paper</a><a href="summaries.html">summaries</a></div></header>
+    <p class="day-page-overview">The threads running through the conference so far — each topic links to the talks that raised it; drag the graph to explore.</p><div class="topics-meta">14 topics across 39 talks · by alan · in <span class="timer">30.3s</span> · 2026-07-22T15:51:48</div><div id="topic-graph-wrap"><canvas id="topic-graph"></canvas><div class="graph-hint">drag to explore · click a topic</div></div><script id="graph-data" type="application/json">{"nodes": [{"name": "Simulation-Based Inference", "count": 24}, {"name": "Galaxy Evolution & Formation", "count": 17}, {"name": "Simulation Techniques", "count": 10}, {"name": "Bayesian & Statistical Methods", "count": 9}, {"name": "Cosmological Inference", "count": 9}, {"name": "SED & Spectral Analysis", "count": 9}, {"name": "Generative AI & Diffusion", "count": 6}, {"name": "Inference Optimization", "count": 4}, {"name": "Interstellar & Circumgalactic Medium", "count": 4}, {"name": "Machine Learning Architectures", "count": 4}, {"name": "Multi-Messenger & Survey Data", "count": 4}, {"name": "Differentiable Modeling", "count": 3}, {"name": "AI for Education & Meetings", "count": 2}, {"name": "Galactic Archaeology & Dynamics", "count": 2}], "links": [{"source": 0, "target": 1, "weight": 11}, {"source": 0, "target": 2, "weight": 6}, {"source": 0, "target": 3, "weight": 6}, {"source": 0, "target": 4, "weight": 6}, {"source": 0, "target": 5, "weight": 5}, {"source": 0, "target": 6, "weight": 4}, {"source": 0, "target": 7, "weight": 3}, {"source": 0, "target": 8, "weight": 3}, {"source": 0, "target": 9, "weight": 1}, {"source": 0, "target": 10, "weight": 2}, {"source": 0, "target": 13, "weight": 1}, {"source": 1, "target": 2, "weight": 6}, {"source": 1, "target": 3, "weight": 4}, {"source": 1, "target": 4, "weight": 4}, {"source": 1, "target": 5, "weight": 6}, {"source": 1, "target": 6, "weight": 3}, {"source": 1, "target": 8, "weight": 1}, {"source": 1, "target": 9, "weight": 3}, {"source": 1, "target": 10, "weight": 2}, {"source": 1, "target": 11, "weight": 3}, {"source": 2, "target": 3, "weight": 1}, {"source": 2, "target": 4, "weight": 4}, {"source": 2, "target": 6, "weight": 1}, {"source": 2, "target": 8, "weight": 2}, {"source": 2, "target": 9, "weight": 1}, {"source": 2, "target": 10, "weight": 1}, {"source": 2, "target": 11, "weight": 1}, {"source": 3, "target": 5, "weight": 2}, {"source": 3, "target": 6, "weight": 4}, {"source": 3, "target": 11, "weight": 2}, {"source": 3, "target": 13, "weight": 1}, {"source": 4, "target": 6, "weight": 2}, {"source": 4, "target": 7, "weight": 2}, {"source": 4, "target": 9, "weight": 1}, {"source": 5, "target": 6, "weight": 1}, {"source": 5, "target": 8, "weight": 2}, {"source": 5, "target": 9, "weight": 1}, {"source": 5, "target": 10, "weight": 2}, {"source": 5, "target": 11, "weight": 2}, {"source": 6, "target": 13, "weight": 1}, {"source": 9, "target": 10, "weight": 1}, {"source": 10, "target": 11, "weight": 1}]}</script><script>
+(function () {
+  var canvas = document.getElementById('topic-graph');
+  var holder = document.getElementById('graph-data');
+  if (!canvas || !holder) return;
+  var data; try { data = JSON.parse(holder.textContent); } catch (e) { return; }
+  var nodes = data.nodes || [], links = data.links || [], N = nodes.length;
+  if (N < 2) return;
+
+  var maxC = 1;
+  nodes.forEach(function (n) { maxC = Math.max(maxC, n.count || 1); });
+  nodes.forEach(function (n, i) {
+    n.r = 9 + 17 * Math.sqrt((n.count || 1) / maxC);
+    n.hue = Math.round(360 * i / N);
+  });
+
+  var ctx = canvas.getContext('2d');
+  var W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  function resize() {
+    W = canvas.clientWidth || 600; H = canvas.clientHeight || 460;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  nodes.forEach(function (n, i) {
+    var a = 2 * Math.PI * i / N, R = Math.min(W, H) * 0.32;
+    n.x = W / 2 + Math.cos(a) * R; n.y = H / 2 + Math.sin(a) * R; n.vx = 0; n.vy = 0;
+  });
+
+  var alpha = 1, hover = -1, drag = -1, dragMoved = false, downX = 0, downY = 0, rafId = null;
+
+  function tick() {
+    var i, j;
+    for (i = 0; i < N; i++) {
+      for (j = i + 1; j < N; j++) {
+        var dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
+        var d2 = dx * dx + dy * dy || 0.01, d = Math.sqrt(d2), f = 2800 / d2;
+        var ux = dx / d, uy = dy / d;
+        nodes[i].vx -= ux * f; nodes[i].vy -= uy * f;
+        nodes[j].vx += ux * f; nodes[j].vy += uy * f;
+      }
+    }
+    links.forEach(function (l) {
+      var a = nodes[l.source], b = nodes[l.target];
+      var dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx * dx + dy * dy) || 0.01;
+      var k = 0.02 * (1 + Math.min(l.weight || 1, 4) * 0.4), f = (d - 96) * k;
+      var ux = dx / d, uy = dy / d;
+      a.vx += ux * f; a.vy += uy * f; b.vx -= ux * f; b.vy -= uy * f;
+    });
+    for (i = 0; i < N; i++) {
+      var n = nodes[i];
+      n.vx += (W / 2 - n.x) * 0.002; n.vy += (H / 2 - n.y) * 0.002;
+      if (i === drag) { n.vx = 0; n.vy = 0; continue; }
+      n.vx *= 0.86; n.vy *= 0.86;
+      n.x += n.vx * alpha; n.y += n.vy * alpha;
+      n.x = Math.max(n.r + 2, Math.min(W - n.r - 2, n.x));
+      n.y = Math.max(n.r + 2, Math.min(H - n.r - 2, n.y));
+    }
+    if (alpha > 0.02) alpha *= 0.99;
+  }
+
+  function neighbours(i) {
+    var s = {};
+    links.forEach(function (l) {
+      if (l.source === i) s[l.target] = 1;
+      if (l.target === i) s[l.source] = 1;
+    });
+    return s;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    var nb = hover >= 0 ? neighbours(hover) : null;
+    links.forEach(function (l) {
+      var a = nodes[l.source], b = nodes[l.target];
+      var on = hover < 0 || l.source === hover || l.target === hover;
+      ctx.strokeStyle = on ? 'rgba(150,170,150,' + Math.min(0.16 + (l.weight || 1) * 0.16, 0.7) + ')'
+                           : 'rgba(130,130,130,0.05)';
+      ctx.lineWidth = on ? Math.min(1 + (l.weight || 1), 4) : 1;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    });
+    nodes.forEach(function (n, i) {
+      var dim = hover >= 0 && i !== hover && !(nb && nb[i]);
+      ctx.globalAlpha = dim ? 0.25 : 1;
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, 2 * Math.PI);
+      ctx.fillStyle = 'hsl(' + n.hue + ',45%,' + (i === hover ? 62 : 48) + '%)';
+      ctx.fill();
+      ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.stroke();
+      ctx.fillStyle = i === hover ? '#fff' : '#cfcfcf';
+      ctx.font = (i === hover ? '600 ' : '') + Math.max(11, Math.min(15, 10 + n.r * 0.13)) + 'px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText(n.name, n.x, n.y + n.r + 3);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  function loop() {
+    tick(); draw();
+    if (alpha > 0.03 || drag >= 0 || hover >= 0) rafId = requestAnimationFrame(loop);
+    else rafId = null;
+  }
+  function kick(a) { if (a) alpha = Math.max(alpha, a); if (!rafId) rafId = requestAnimationFrame(loop); }
+  kick(1);
+
+  function pos(e) { var r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+  function hit(p) {
+    for (var i = N - 1; i >= 0; i--) {
+      var dx = p.x - nodes[i].x, dy = p.y - nodes[i].y, rr = nodes[i].r + 4;
+      if (dx * dx + dy * dy <= rr * rr) return i;
+    }
+    return -1;
+  }
+  canvas.addEventListener('pointermove', function (e) {
+    var p = pos(e);
+    if (drag >= 0) {
+      nodes[drag].x = p.x; nodes[drag].y = p.y; nodes[drag].vx = 0; nodes[drag].vy = 0;
+      if (Math.abs(p.x - downX) + Math.abs(p.y - downY) > 4) dragMoved = true;
+      kick(0.3);
+    } else {
+      var h = hit(p);
+      if (h !== hover) { hover = h; kick(0); }
+      canvas.style.cursor = h >= 0 ? 'pointer' : 'grab';
+    }
+  });
+  canvas.addEventListener('pointerdown', function (e) {
+    var p = pos(e), h = hit(p);
+    downX = p.x; downY = p.y; dragMoved = false;
+    if (h >= 0) {
+      drag = h; hover = h; canvas.classList.add('dragging');
+      try { canvas.setPointerCapture(e.pointerId); } catch (x) {}
+      kick(0.3);
+    }
+  });
+  function release() {
+    if (drag >= 0 && !dragMoved) {
+      var el = document.getElementById('topic-' + drag);
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+    }
+    drag = -1; canvas.classList.remove('dragging'); kick(0);
+  }
+  canvas.addEventListener('pointerup', release);
+  canvas.addEventListener('pointercancel', function () { drag = -1; canvas.classList.remove('dragging'); kick(0); });
+  canvas.addEventListener('pointerleave', function () { if (drag < 0 && hover >= 0) { hover = -1; kick(0); } });
+  window.addEventListener('resize', function () {
+    var ox = W, oy = H; resize();
+    if (ox && oy) nodes.forEach(function (n) { n.x *= W / ox; n.y *= H / oy; });
+    kick(0.4);
+  });
+})();
+</script><article class="tcard" id="topic-0"><h2>Simulation-Based Inference <span class="n">24 talks</span></h2><p class="tdesc">Core methodologies for likelihood-free inference including neural posterior and ratio estimation.</p><div class="tkw">simulation based inference, simulation-based inference, simulation-based inference (sbi), likelihood-free inference, neural posterior estimation, neural ratio estimation, neural density estimation, amortized posterior estimation, normalizing flows, neural spline flows</div><ul class="ttalks"><li><a href="day-2026-06-24.html#2026-06-24_10-01-50_maximilian-von-wietersheim-kramsta">Addressing the Simulation Bottleneck in Simulation-Based Inference</a></li><li><a href="day-2026-06-23.html#2026-06-23_15-31-37_richard-stiskalek">Cheap, physics-informed training data for SBI</a></li><li><a href="day-2026-06-24.html#2026-06-24_14-46-13_johannes-buchner">Comparing Bayesian Inference Methods in Astronomy: HMC, Nested Sampling, and SBI</a></li><li><a href="day-2026-06-26.html#2026-06-26_10-24-25_christian-jespersen">Connecting Environment and Assembly to Measure the Formation Histories of Dark Matter Halos With GNN-powered SBI</a></li><li><a href="day-2026-06-24.html#2026-06-24_12-00-21_ming-shau-liu">Continuous Representation of Hydrodynamic Simulations for Robust SBI</a></li><li><a href="day-2026-06-23.html#2026-06-23_14-35-19_patricia-iglesias-navarro">Decoding the SED: Disentangling galaxy physics from the rest-frame optical</a></li><li><a href="day-2026-06-23.html#2026-06-23_17-34-30_lucas-makinen">Degeneracy Distillery: Learning Information Geometry for Simulation-Based Inference</a></li><li><a href="day-2026-06-24.html#2026-06-24_15-36-21_gregoire-aufort">Diffusion based SED fitting</a></li><li><a href="day-2026-06-24.html#2026-06-24_12-49-58_giuseppe-viterbo">Diffusion Models for Simulation-Based Inference</a></li><li><a href="day-2026-06-26.html#2026-06-26_15-19-06_jonah-rose">Disentangling Feedback and Variance in 1,024 Milky Way-Mass DREAMS Simulations</a></li><li><a href="day-2026-06-26.html#2026-06-26_10-55-58_sophie-newman">Exploring the Impact of Dust on Galaxy Luminosity Functions with Semi-Analytic Models</a></li><li><a href="day-2026-06-26.html#2026-06-26_12-01-18_shichen-teresa-su">Fast Stellar Age Inference for Galactic Archaeology with SBI</a></li><li><a href="day-2026-06-25.html#2026-06-25_11-00-50_alex-saoulis">Field-level cosmology with &lt;100 simulations using multifidelity SBI: a proof-of-concept for KiDS-legacy weak lensing</a></li><li><a href="day-2026-06-25.html#2026-06-25_10-09-06_hiranya-peiris">Galaxy Evolution Meets Cosmological Inference</a></li><li><a href="day-2026-06-26.html#2026-06-26_15-57-40_james-kostas-ray">Image-Based Inference: Bridging Photometric Surveys and Spectroscopic Constraints</a></li><li><a href="day-2026-06-26.html#2026-06-26_15-31-00_tanmay-singh">Inferring CGM Cloud Properties Using Simulation-Based Inference</a></li><li><a href="day-2026-06-23.html#2026-06-23_10-19-21_harvey-intro">Introduction to Likelihood-Free Inference</a></li><li><a href="day-2026-06-25.html#2026-06-25_12-42-17_caterina-bracci">Mapping Nebular Structure and ISM Conditions with SBI</a></li><li><a href="day-2026-06-25.html#2026-06-25_10-45-52_sherman-khoo">Minimum Distance Summaries for Robust Neural Posterior Estimation</a></li><li><a href="day-2026-06-24.html#2026-06-24_15-52-30_philippa-cole">SBI for LISA</a></li><li><a href="day-2026-06-26.html#2026-06-26_12-30-44_thomas-bebbington">Simulation Based Inference for Understanding the Role of AGN in Galaxy Evolution</a></li><li><a href="day-2026-06-24.html#2026-06-24_17-06-54_data-challenge">Simulation-Based Inference (SBI) Data Challenge for Galaxy Evolution</a></li><li><a href="day-2026-06-24.html#2026-06-24_17-41-18_synference-tutorial">Synference Tutorial</a></li><li><a href="day-2026-06-24.html#2026-06-24_15-20-39_yichen-zang">Test-time inference for Prior Change via Density Ratio Estimation</a></li></ul></article>
+<article class="tcard" id="topic-1"><h2>Galaxy Evolution &amp; Formation <span class="n">17 talks</span></h2><p class="tdesc">Applying inference to understand galaxy mergers, populations, and the role of AGN.</p><div class="tkw">galaxy evolution, galaxy formation, galaxy mergers, galaxy population synthesis, active galactic nuclei, active galactic nuclei (agn), baryonic feedback, galaxy luminosity functions</div><ul class="ttalks"><li><a href="day-2026-06-24.html#2026-06-24_14-46-13_johannes-buchner">Comparing Bayesian Inference Methods in Astronomy: HMC, Nested Sampling, and SBI</a></li><li><a href="day-2026-06-26.html#2026-06-26_10-24-25_christian-jespersen">Connecting Environment and Assembly to Measure the Formation Histories of Dark Matter Halos With GNN-powered SBI</a></li><li><a href="day-2026-06-24.html#2026-06-24_12-00-21_ming-shau-liu">Continuous Representation of Hydrodynamic Simulations for Robust SBI</a></li><li><a href="day-2026-06-23.html#2026-06-23_14-35-19_patricia-iglesias-navarro">Decoding the SED: Disentangling galaxy physics from the rest-frame optical</a></li><li><a href="day-2026-06-26.html#2026-06-26_12-49-40_subhrata-dey">Deep learning approaches for galaxy merger identification and classification: bridging simulations and observations</a></li><li><a href="day-2026-06-23.html#2026-06-23_15-16-34_amanda-stoffers">Differentiable SED Simulation with Ceridwen</a></li><li><a href="day-2026-06-24.html#2026-06-24_15-36-21_gregoire-aufort">Diffusion based SED fitting</a></li><li><a href="day-2026-06-26.html#2026-06-26_15-19-06_jonah-rose">Disentangling Feedback and Variance in 1,024 Milky Way-Mass DREAMS Simulations</a></li><li><a href="day-2026-06-26.html#2026-06-26_10-55-58_sophie-newman">Exploring the Impact of Dust on Galaxy Luminosity Functions with Semi-Analytic Models</a></li><li><a href="day-2026-06-25.html#2026-06-25_10-09-06_hiranya-peiris">Galaxy Evolution Meets Cosmological Inference</a></li><li><a href="day-2026-06-26.html#2026-06-26_10-42-02_andrew-green">Introducing L-Galaxies AD: an auto-differentiable galaxy evolution simulation</a></li><li><a href="day-2026-06-23.html#2026-06-23_11-15-30_stephen-thorp">Pop-Cosmos: A Generative Model for the Galaxy Population</a></li><li><a href="day-2026-06-26.html#2026-06-26_11-14-29_shun-ya-uchida">Quantifying Environmental Information in Galaxy Evolution with Interpretable Machine Learning</a></li><li><a href="day-2026-06-26.html#2026-06-26_12-30-44_thomas-bebbington">Simulation Based Inference for Understanding the Role of AGN in Galaxy Evolution</a></li><li><a href="day-2026-06-24.html#2026-06-24_17-06-54_data-challenge">Simulation-Based Inference (SBI) Data Challenge for Galaxy Evolution</a></li><li><a href="day-2026-06-24.html#2026-06-24_17-41-18_synference-tutorial">Synference Tutorial</a></li><li><a href="day-2026-06-23.html#2026-06-23_11-46-01_suchetha-cooray">UNiverse Machine 2 and Tengri: Differentiable Frameworks for Galaxy Formation and Inference</a></li></ul></article>
+<article class="tcard" id="topic-2"><h2>Simulation Techniques <span class="n">10 talks</span></h2><p class="tdesc">Various simulation frameworks including hydrodynamic, N-body, and semi-analytic models.</p><div class="tkw">hydrodynamic simulations, n-body simulations, semi-analytic models, semi-analytic models (sams), cosmological simulations, forward modeling, forward modelling</div><ul class="ttalks"><li><a href="day-2026-06-23.html#2026-06-23_15-31-37_richard-stiskalek">Cheap, physics-informed training data for SBI</a></li><li><a href="day-2026-06-24.html#2026-06-24_12-00-21_ming-shau-liu">Continuous Representation of Hydrodynamic Simulations for Robust SBI</a></li><li><a href="day-2026-06-26.html#2026-06-26_15-19-06_jonah-rose">Disentangling Feedback and Variance in 1,024 Milky Way-Mass DREAMS Simulations</a></li><li><a href="day-2026-06-26.html#2026-06-26_10-55-58_sophie-newman">Exploring the Impact of Dust on Galaxy Luminosity Functions with Semi-Analytic Models</a></li><li><a href="day-2026-06-24.html#2026-06-24_10-38-38_silvan-fischbacher">GalSBI: Forward Modelling Galaxy Clustering and Population</a></li><li><a href="day-2026-06-24.html#2026-06-24_12-15-10_leonor-sim-es">Implementing 3D Intrinsic Alignment Models in Projected Simulations</a></li><li><a href="day-2026-06-26.html#2026-06-26_15-31-00_tanmay-singh">Inferring CGM Cloud Properties Using Simulation-Based Inference</a></li><li><a href="day-2026-06-26.html#2026-06-26_10-42-02_andrew-green">Introducing L-Galaxies AD: an auto-differentiable galaxy evolution simulation</a></li><li><a href="day-2026-06-26.html#2026-06-26_11-14-29_shun-ya-uchida">Quantifying Environmental Information in Galaxy Evolution with Interpretable Machine Learning</a></li><li><a href="day-2026-06-26.html#2026-06-26_12-30-44_thomas-bebbington">Simulation Based Inference for Understanding the Role of AGN in Galaxy Evolution</a></li></ul></article>
+<article class="tcard" id="topic-3"><h2>Bayesian &amp; Statistical Methods <span class="n">9 talks</span></h2><p class="tdesc">Comparison of sampling methods and the study of information geometry and degeneracy.</p><div class="tkw">bayesian inference, hamiltonian monte carlo, nested sampling, information geometry, parameter degeneracy, density ratio estimation</div><ul class="ttalks"><li><a href="day-2026-06-24.html#2026-06-24_14-46-13_johannes-buchner">Comparing Bayesian Inference Methods in Astronomy: HMC, Nested Sampling, and SBI</a></li><li><a href="day-2026-06-23.html#2026-06-23_17-34-30_lucas-makinen">Degeneracy Distillery: Learning Information Geometry for Simulation-Based Inference</a></li><li><a href="day-2026-06-24.html#2026-06-24_15-36-21_gregoire-aufort">Diffusion based SED fitting</a></li><li><a href="day-2026-06-24.html#2026-06-24_12-49-58_giuseppe-viterbo">Diffusion Models for Simulation-Based Inference</a></li><li><a href="day-2026-06-23.html#2026-06-23_13-30-27_lawrence-faria">Diffusion-Based Inference of HI Kinematics in Ultra-Diffuse Galaxies</a></li><li><a href="day-2026-06-26.html#2026-06-26_10-42-02_andrew-green">Introducing L-Galaxies AD: an auto-differentiable galaxy evolution simulation</a></li><li><a href="day-2026-06-23.html#2026-06-23_10-19-21_harvey-intro">Introduction to Likelihood-Free Inference</a></li><li><a href="day-2026-06-24.html#2026-06-24_15-20-39_yichen-zang">Test-time inference for Prior Change via Density Ratio Estimation</a></li><li><a href="day-2026-06-23.html#2026-06-23_11-46-01_suchetha-cooray">UNiverse Machine 2 and Tengri: Differentiable Frameworks for Galaxy Formation and Inference</a></li></ul></article>
+<article class="tcard" id="topic-4"><h2>Cosmological Inference <span class="n">9 talks</span></h2><p class="tdesc">Inference applied to large-scale structure, dark matter halos, and weak lensing.</p><div class="tkw">cosmological inference, cosmology, dark matter halos, weak lensing, galaxy clustering, intrinsic alignment</div><ul class="ttalks"><li><a href="day-2026-06-24.html#2026-06-24_10-01-50_maximilian-von-wietersheim-kramsta">Addressing the Simulation Bottleneck in Simulation-Based Inference</a></li><li><a href="day-2026-06-23.html#2026-06-23_15-31-37_richard-stiskalek">Cheap, physics-informed training data for SBI</a></li><li><a href="day-2026-06-26.html#2026-06-26_10-24-25_christian-jespersen">Connecting Environment and Assembly to Measure the Formation Histories of Dark Matter Halos With GNN-powered SBI</a></li><li><a href="day-2026-06-24.html#2026-06-24_12-00-21_ming-shau-liu">Continuous Representation of Hydrodynamic Simulations for Robust SBI</a></li><li><a href="day-2026-06-25.html#2026-06-25_11-00-50_alex-saoulis">Field-level cosmology with &lt;100 simulations using multifidelity SBI: a proof-of-concept for KiDS-legacy weak lensing</a></li><li><a href="day-2026-06-25.html#2026-06-25_10-09-06_hiranya-peiris">Galaxy Evolution Meets Cosmological Inference</a></li><li><a href="day-2026-06-24.html#2026-06-24_10-38-38_silvan-fischbacher">GalSBI: Forward Modelling Galaxy Clustering and Population</a></li><li><a href="day-2026-06-24.html#2026-06-24_12-15-10_leonor-sim-es">Implementing 3D Intrinsic Alignment Models in Projected Simulations</a></li><li><a href="day-2026-06-23.html#2026-06-23_11-15-30_stephen-thorp">Pop-Cosmos: A Generative Model for the Galaxy Population</a></li></ul></article>
+<article class="tcard" id="topic-5"><h2>SED &amp; Spectral Analysis <span class="n">9 talks</span></h2><p class="tdesc">Modeling spectral energy distributions and analyzing galaxy spectra and emission.</p><div class="tkw">spectral energy distribution (sed), sed fitting, sed modeling, galaxy spectra, emission lines, photoionisation models</div><ul class="ttalks"><li><a href="day-2026-06-25.html#2026-06-25_11-51-38_eduardo-hartmann">Connecting Stars and Gas: a data driven approach to modeling gas emission based on stellar continuum using DESI</a></li><li><a href="day-2026-06-23.html#2026-06-23_14-35-19_patricia-iglesias-navarro">Decoding the SED: Disentangling galaxy physics from the rest-frame optical</a></li><li><a href="day-2026-06-23.html#2026-06-23_15-16-34_amanda-stoffers">Differentiable SED Simulation with Ceridwen</a></li><li><a href="day-2026-06-24.html#2026-06-24_15-36-21_gregoire-aufort">Diffusion based SED fitting</a></li><li><a href="day-2026-06-25.html#2026-06-25_12-42-17_caterina-bracci">Mapping Nebular Structure and ISM Conditions with SBI</a></li><li><a href="day-2026-06-23.html#2026-06-23_11-30-31_steven-ramnichal">SE3D: A Novel Modeling Technique for Chromatic Resolved Galaxy Observations</a></li><li><a href="day-2026-06-24.html#2026-06-24_17-06-54_data-challenge">Simulation-Based Inference (SBI) Data Challenge for Galaxy Evolution</a></li><li><a href="day-2026-06-24.html#2026-06-24_17-41-18_synference-tutorial">Synference Tutorial</a></li><li><a href="day-2026-06-23.html#2026-06-23_11-46-01_suchetha-cooray">UNiverse Machine 2 and Tengri: Differentiable Frameworks for Galaxy Formation and Inference</a></li></ul></article>
+<article class="tcard" id="topic-6"><h2>Generative AI &amp; Diffusion <span class="n">6 talks</span></h2><p class="tdesc">The application of diffusion models and generative frameworks for astronomical data.</p><div class="tkw">diffusion models, generative models, generative models / flow matching, score matching</div><ul class="ttalks"><li><a href="day-2026-06-24.html#2026-06-24_12-00-21_ming-shau-liu">Continuous Representation of Hydrodynamic Simulations for Robust SBI</a></li><li><a href="day-2026-06-24.html#2026-06-24_15-36-21_gregoire-aufort">Diffusion based SED fitting</a></li><li><a href="day-2026-06-24.html#2026-06-24_12-49-58_giuseppe-viterbo">Diffusion Models for Simulation-Based Inference</a></li><li><a href="day-2026-06-23.html#2026-06-23_13-30-27_lawrence-faria">Diffusion-Based Inference of HI Kinematics in Ultra-Diffuse Galaxies</a></li><li><a href="day-2026-06-23.html#2026-06-23_11-15-30_stephen-thorp">Pop-Cosmos: A Generative Model for the Galaxy Population</a></li><li><a href="day-2026-06-24.html#2026-06-24_15-20-39_yichen-zang">Test-time inference for Prior Change via Density Ratio Estimation</a></li></ul></article>
+<article class="tcard" id="topic-7"><h2>Inference Optimization <span class="n">4 talks</span></h2><p class="tdesc">Techniques to improve the robustness and efficiency of the inference process.</p><div class="tkw">multi-fidelity modeling, multifidelity learning, test-time adaptation, maximum mean discrepancy, maximum mean discrepancy (mmd), robust statistics</div><ul class="ttalks"><li><a href="day-2026-06-24.html#2026-06-24_10-01-50_maximilian-von-wietersheim-kramsta">Addressing the Simulation Bottleneck in Simulation-Based Inference</a></li><li><a href="day-2026-06-25.html#2026-06-25_11-00-50_alex-saoulis">Field-level cosmology with &lt;100 simulations using multifidelity SBI: a proof-of-concept for KiDS-legacy weak lensing</a></li><li><a href="day-2026-06-25.html#2026-06-25_10-45-52_sherman-khoo">Minimum Distance Summaries for Robust Neural Posterior Estimation</a></li><li><a href="day-2026-06-24.html#2026-06-24_10-20-18_arya-farahi">OASIS: A Robust Framework for Population Inference in Astronomy</a></li></ul></article>
+<article class="tcard" id="topic-8"><h2>Interstellar &amp; Circumgalactic Medium <span class="n">4 talks</span></h2><p class="tdesc">Studying the gas and dust environments surrounding and within galaxies.</p><div class="tkw">circumgalactic medium (cgm), interstellar medium (ism), dust attenuation, dust geometry, absorption spectroscopy</div><ul class="ttalks"><li><a href="day-2026-06-26.html#2026-06-26_10-55-58_sophie-newman">Exploring the Impact of Dust on Galaxy Luminosity Functions with Semi-Analytic Models</a></li><li><a href="day-2026-06-26.html#2026-06-26_15-31-00_tanmay-singh">Inferring CGM Cloud Properties Using Simulation-Based Inference</a></li><li><a href="day-2026-06-25.html#2026-06-25_12-42-17_caterina-bracci">Mapping Nebular Structure and ISM Conditions with SBI</a></li><li><a href="day-2026-06-23.html#2026-06-23_11-30-31_steven-ramnichal">SE3D: A Novel Modeling Technique for Chromatic Resolved Galaxy Observations</a></li></ul></article>
+<article class="tcard" id="topic-9"><h2>Machine Learning Architectures <span class="n">4 talks</span></h2><p class="tdesc">Specific neural network architectures used for astronomical data analysis.</p><div class="tkw">deep learning, convolutional neural networks, graph neural networks, interpretable machine learning, shap analysis</div><ul class="ttalks"><li><a href="day-2026-06-26.html#2026-06-26_10-24-25_christian-jespersen">Connecting Environment and Assembly to Measure the Formation Histories of Dark Matter Halos With GNN-powered SBI</a></li><li><a href="day-2026-06-25.html#2026-06-25_11-51-38_eduardo-hartmann">Connecting Stars and Gas: a data driven approach to modeling gas emission based on stellar continuum using DESI</a></li><li><a href="day-2026-06-26.html#2026-06-26_12-49-40_subhrata-dey">Deep learning approaches for galaxy merger identification and classification: bridging simulations and observations</a></li><li><a href="day-2026-06-26.html#2026-06-26_11-14-29_shun-ya-uchida">Quantifying Environmental Information in Galaxy Evolution with Interpretable Machine Learning</a></li></ul></article>
+<article class="tcard" id="topic-10"><h2>Multi-Messenger &amp; Survey Data <span class="n">4 talks</span></h2><p class="tdesc">Application of SBI to specific instruments and diverse data types like gravitational waves.</p><div class="tkw">lisa, gravitational waves, extreme mass ratio inspirals (emris), desi, jwst, euclid survey</div><ul class="ttalks"><li><a href="day-2026-06-25.html#2026-06-25_11-51-38_eduardo-hartmann">Connecting Stars and Gas: a data driven approach to modeling gas emission based on stellar continuum using DESI</a></li><li><a href="day-2026-06-23.html#2026-06-23_15-16-34_amanda-stoffers">Differentiable SED Simulation with Ceridwen</a></li><li><a href="day-2026-06-24.html#2026-06-24_15-52-30_philippa-cole">SBI for LISA</a></li><li><a href="day-2026-06-26.html#2026-06-26_12-30-44_thomas-bebbington">Simulation Based Inference for Understanding the Role of AGN in Galaxy Evolution</a></li></ul></article>
+<article class="tcard" id="topic-11"><h2>Differentiable Modeling <span class="n">3 talks</span></h2><p class="tdesc">The use of automatic differentiation and differentiable programming in astrophysical simulations.</p><div class="tkw">automatic differentiation, differentiable programming, computational graphs, jax</div><ul class="ttalks"><li><a href="day-2026-06-23.html#2026-06-23_15-16-34_amanda-stoffers">Differentiable SED Simulation with Ceridwen</a></li><li><a href="day-2026-06-26.html#2026-06-26_10-42-02_andrew-green">Introducing L-Galaxies AD: an auto-differentiable galaxy evolution simulation</a></li><li><a href="day-2026-06-23.html#2026-06-23_11-46-01_suchetha-cooray">UNiverse Machine 2 and Tengri: Differentiable Frameworks for Galaxy Formation and Inference</a></li></ul></article>
+<article class="tcard" id="topic-12"><h2>AI for Education &amp; Meetings <span class="n">2 talks</span></h2><p class="tdesc">General purpose AI tools for conference synthesis and educational technology.</p><div class="tkw">ambient ai, self-hosted ai, educational technology, conference synthesis, automatic speech recognition</div><ul class="ttalks"><li><a href="day-2026-06-26.html#2026-06-26_17-14-57_chris-lovell">Ambient AI for Scientific Meetings</a></li><li><a href="day-2026-06-26.html#2026-06-26_17-04-11_sotiria-fotopoulou">Self-Hosted AI for Education</a></li></ul></article>
+<article class="tcard" id="topic-13"><h2>Galactic Archaeology &amp; Dynamics <span class="n">2 talks</span></h2><p class="tdesc">Inference regarding stellar ages, kinematics, and the structure of the Milky Way.</p><div class="tkw">galactic archaeology, stellar age inference, hi kinematics, rotation curves, ultra-diffuse galaxies</div><ul class="ttalks"><li><a href="day-2026-06-23.html#2026-06-23_13-30-27_lawrence-faria">Diffusion-Based Inference of HI Kinematics in Ultra-Diffuse Galaxies</a></li><li><a href="day-2026-06-26.html#2026-06-26_12-01-18_shichen-teresa-su">Fast Stellar Age Inference for Galactic Archaeology with SBI</a></li></ul></article>
+  </div>
+  
+  <script>
+(function () {
+  var slides = [], idx = 0, title = "";
+  var lb = document.createElement('div');
+  lb.className = 'lb';
+  lb.innerHTML =
+    '<div class="lb-top"><span class="lb-title"></span>'
+    + '<button class="lb-close" aria-label="Close">&times;</button></div>'
+    + '<div class="lb-stage"><button class="lb-nav lb-prev" aria-label="Previous">&#8249;</button>'
+    + '<img alt="slide">'
+    + '<button class="lb-nav lb-next" aria-label="Next">&#8250;</button></div>'
+    + '<div class="lb-count"></div>';
+  document.body.appendChild(lb);
+  var img = lb.querySelector('img'), stage = lb.querySelector('.lb-stage'),
+      elTitle = lb.querySelector('.lb-title'), elCount = lb.querySelector('.lb-count'),
+      btnPrev = lb.querySelector('.lb-prev'), btnNext = lb.querySelector('.lb-next');
+  function show() {
+    img.src = slides[idx];
+    elTitle.textContent = title;
+    elCount.textContent = (idx + 1) + ' / ' + slides.length;
+    btnPrev.disabled = idx <= 0;
+    btnNext.disabled = idx >= slides.length - 1;
+  }
+  function open(arr, t, start) {
+    if (!arr || !arr.length) return;
+    slides = arr; title = t || ''; idx = start || 0;
+    lb.classList.add('open'); show();
+  }
+  function close() { lb.classList.remove('open'); img.src = ''; }
+  function go(d) { idx = Math.max(0, Math.min(slides.length - 1, idx + d)); show(); }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a.thumb'); if (!a) return;
+    var data = a.getAttribute('data-slides'); if (!data) return;
+    var arr; try { arr = JSON.parse(data); } catch (_) { return; }
+    if (!arr.length) return;
+    e.preventDefault(); open(arr, a.getAttribute('data-title'), 0);
+  });
+  btnPrev.addEventListener('click', function () { go(-1); });
+  btnNext.addEventListener('click', function () { go(1); });
+  lb.querySelector('.lb-close').addEventListener('click', close);
+  lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
+  stage.addEventListener('click', function (e) { if (e.target === stage) close(); });
+  document.addEventListener('keydown', function (e) {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') go(-1);
+    else if (e.key === 'ArrowRight') go(1);
+  });
+})();
+</script>
+</body>
+</html>
