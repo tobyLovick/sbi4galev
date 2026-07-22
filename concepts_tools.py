@@ -199,7 +199,18 @@ def _aliases(item):
 
 
 def _patterns(aliases):
-    return [re.compile(r"\b" + re.escape(a) + r"\b", re.I) for a in aliases]
+    # Match each alias tolerating hyphen/space/underscore interchange, so a
+    # canonical "pop-cosmos" also catches the spoken "pop cosmos" in transcripts
+    # (and "Illustris-TNG" ~ "Illustris TNG", etc.). Single-word aliases are
+    # unaffected (they reduce to \bword\b).
+    pats = []
+    for a in aliases:
+        parts = [p for p in re.split(r"[\s\-_]+", a.strip()) if p]
+        if not parts:
+            continue
+        body = r"[\s\-_]+".join(re.escape(p) for p in parts)
+        pats.append(re.compile(r"\b" + body + r"\b", re.I))
+    return pats
 
 
 # The conference's overarching subject is not a useful "method" to list — it
