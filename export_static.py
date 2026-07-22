@@ -41,6 +41,7 @@ import html
 import json
 import re
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import quote, unquote
@@ -245,7 +246,7 @@ LANDING_CSS = """
 """
 
 
-def render_landing(talks, grouped, have_ct=False) -> str:
+def render_landing(talks, grouped, have_ct=False, have_wp=False) -> str:
     """Build the static archive's front door: conference title + description,
     a note on the ambient-AI tool that produced it, and cards linking to the
     day summaries, key-topics (and concepts/tools) pages. Static-only (the live
@@ -274,6 +275,12 @@ def render_landing(talks, grouped, have_ct=False) -> str:
         <span class="lcard-d">Codes, packages and simulation suites used across the meeting, with links and the talks that used them.</span>
       </a>""" if have_ct else "")
 
+    wp_card = ("""
+      <a class="lcard" href="whitepaper.html">
+        <span class="lcard-h">White paper →</span>
+        <span class="lcard-d">The AI-generated summary white paper — read it in the browser or download the typeset PDF.</span>
+      </a>""" if have_wp else "")
+
     body = f"""<style>{LANDING_CSS}</style>
     <section class="hero">
       <h2>{esc(config.CONF_FULL)}</h2>
@@ -300,13 +307,15 @@ def render_landing(talks, grouped, have_ct=False) -> str:
       <a class="lcard" href="topics.html">
         <span class="lcard-h">Key topics →</span>
         <span class="lcard-d">The themes that ran across the meeting, linked together as a topic map.</span>
-      </a>{ct_cards}
+      </a>{ct_cards}{wp_card}
     </nav>
     <p class="byline">Summaries written automatically by a local, on-device AI assistant.</p>"""
 
     nav = '<a href="summaries.html">day summaries</a><a href="topics.html">key topics</a>'
     if have_ct:
         nav += '<a href="methods.html">methods</a><a href="tools.html">tools</a>'
+    if have_wp:
+        nav += '<a href="whitepaper.html">white paper</a>'
     if conf_url:
         nav += f'<a href="{esc(conf_url)}">conference ↗</a>'
     heading = f"{esc(config.CONF_SHORT)} {esc(config.CONF_YEAR)}"
@@ -380,6 +389,112 @@ def render_tools(data, nav):
             '(looked up on-box). Counts are mentions across talk transcripts and slides.')
     body = f'<style>{CONCEPTS_CSS}</style><p class="lede">{lede}</p>{"".join(rows)}'
     return ts._page_shell(f"{config.CONF_SHORT} — Tools", "Tools &amp; software", nav, body)
+
+
+# ── White paper (LaTeX summary → in-browser HTML + PDF download) ───────────────
+
+WHITEPAPER_TEX = Path(__file__).parent / "whitepaper.tex"
+WHITEPAPER_PDF = Path(__file__).parent / "whitepaper.pdf"
+
+_MONTHS = ("", "January", "February", "March", "April", "May", "June", "July",
+           "August", "September", "October", "November", "December")
+
+
+def _pandoc_body(tex_path: Path) -> str | None:
+    """Convert the white-paper LaTeX to an HTML fragment via pandoc (standalone,
+    so the title block + abstract survive), returning the inner <body> content
+    (title, abstract, sections, the occurrence table). Sections are shifted to
+    <h2>/<h3> so the paper title is the page's only <h1>. Returns None if pandoc
+    is unavailable or the conversion fails — the caller then skips the page."""
+    try:
+        r = subprocess.run(
+            ["pandoc", "-s", "--shift-heading-level-by=1", "-f", "latex", "-t", "html",
+             str(tex_path)],
+            capture_output=True, text=True, timeout=60)
+    except (FileNotFoundError, OSError, subprocess.SubprocessError) as e:
+        _warn(f"white paper: pandoc unavailable ({e}) — skipping the in-browser page")
+        return None
+    if r.returncode != 0 or not r.stdout.strip():
+        _warn(f"white paper: pandoc failed — skipping the in-browser page\n{r.stderr[-400:]}")
+        return None
+    m = re.search(r"<body>(.*)</body>", r.stdout, re.S)
+    return m.group(1).strip() if m else None
+
+
+def _whitepaper_generated(tex_path: Path) -> str:
+    """Human-readable generation date parsed from whitepaper.py's '% Generated
+    YYYY-MM-DD…' header comment, or '' if not present."""
+    try:
+        head = tex_path.read_text()[:400]
+    except Exception:
+        return ""
+    m = re.search(r"% Generated (\d{4})-(\d{2})-(\d{2})", head)
+    if not m:
+        return ""
+    y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    return f"{d} {_MONTHS[mo]} {y}" if 1 <= mo <= 12 else f"{y}-{m.group(2)}-{m.group(3)}"
+
+
+WHITEPAPER_CSS = """
+    .wp-intro { color:#9a9a9a; line-height:1.7; margin:0 0 1.3em; max-width:72ch; }
+    .wp-actions { display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin:0 0 0.4em; }
+    .wp-dl { display:inline-flex; align-items:center; gap:9px; color:#9ec9b0; font-size:0.98em;
+        text-decoration:none; border:1px solid #3a5a48; border-radius:8px; padding:10px 18px; }
+    .wp-dl:hover { background:#101410; color:#fff; }
+    .wp-dl .arr { font-size:1.05em; line-height:1; }
+    .wp-meta { color:#5c5c5c; font-size:0.78em; letter-spacing:0.5px; }
+    .paper { margin-top:2.2em; padding-top:1.9em; border-top:1px solid #1a1a1a; }
+    .paper #title-block-header { margin-bottom:1.7em; }
+    .paper #title-block-header .title { font-size:1.85em; font-weight:700; color:#fff;
+        line-height:1.25; letter-spacing:0.2px; margin:0 0 0.3em; padding:0; border:none; }
+    .paper .author { color:#9a9; font-size:0.95em; margin:0; }
+    .paper .date { color:#666; font-size:0.75em; letter-spacing:1.5px; text-transform:uppercase;
+        margin:0.35em 0 0; }
+    .paper .abstract { margin:1.5em 0 0; padding:1.15em 1.35em; background:#0e0e0e;
+        border:1px solid #1f1f1f; border-radius:9px; }
+    .paper .abstract-title { color:#9ec9b0; font-size:0.72em; font-weight:600; letter-spacing:1.5px;
+        text-transform:uppercase; margin-bottom:0.55em; }
+    .paper .abstract p { color:#cccccc; line-height:1.7; margin:0; }
+    .paper h2 { font-size:1.22em; font-weight:700; color:#fff; letter-spacing:0.2px;
+        margin:1.9em 0 0.55em; padding-top:1.3em; border-top:1px solid #161616; }
+    .paper h3 { font-size:1.05em; font-weight:600; color:#fff; margin:1.4em 0 0.4em; }
+    .paper p { color:#dcdcdc; line-height:1.78; margin:0 0 1em; }
+    .paper strong { color:#fff; font-weight:600; }
+    .paper ul, .paper ol { margin:0 0 1em 1.3em; color:#cfcfcf; line-height:1.75; }
+    .paper li { margin-bottom:0.3em; }
+    .paper .table-wrap { overflow-x:auto; margin:1.3em 0 1.7em; }
+    .paper table { width:100%; border-collapse:collapse; font-size:0.9em; }
+    .paper caption { color:#888; font-size:0.86em; text-align:left; letter-spacing:0.3px;
+        margin-bottom:0.65em; }
+    .paper th { color:#9ec9b0; font-weight:600; padding:8px 13px; border-bottom:1px solid #2c2c2c;
+        white-space:nowrap; }
+    .paper td { color:#cfcfcf; padding:7px 13px; border-bottom:1px solid #151515; }
+    .paper tbody tr:hover td { background:#0e0e0e; }
+"""
+
+
+def render_whitepaper(paper_html: str, pdf_href: str, nav: str, generated: str = "") -> str:
+    """Wrap the pandoc-converted white paper in the site shell: a short intro, a
+    PDF download button, then the full paper text rendered inline and scrollable."""
+    esc = html.escape
+    meta = " · ".join(
+        [b for b in (f"Generated {esc(generated)}" if generated else "",
+                     f"written on-device by {esc(config.ASSISTANT_NAME)}") if b])
+    meta_html = f'<div class="wp-meta">{meta}</div>' if meta else ""
+    # pandoc emits a bare <table>; wrap it so wide tables scroll on narrow screens.
+    paper_html = paper_html.replace("<table>", '<div class="table-wrap"><table>') \
+                           .replace("</table>", "</table></div>")
+    intro = (f"The AI-generated summary white paper for {esc(config.CONF_SHORT)} "
+             f"{esc(config.CONF_YEAR)} — a concise synthesis of the meeting written "
+             "automatically by the local, on-device assistant from the talk archive. "
+             "Read the full text below, or download the typeset PDF.")
+    body = (f'<style>{WHITEPAPER_CSS}</style>'
+            f'<p class="wp-intro">{intro}</p>'
+            f'<div class="wp-actions">'
+            f'<a class="wp-dl" href="{esc(pdf_href)}"><span class="arr">&#8681;</span> '
+            f'Download PDF</a>{meta_html}</div>'
+            f'<article class="paper">{paper_html}</article>')
+    return ts._page_shell(f"{config.CONF_SHORT} — White paper", "White paper", nav, body)
 
 
 # ── Assets ─────────────────────────────────────────────────────────────────────
@@ -490,25 +605,44 @@ def main():
     concepts = _load_index("concepts.json")
     tools = _load_index("tools.json")
     have_ct = bool(concepts and concepts.get("concepts")) and bool(tools and tools.get("tools"))
+
+    # White paper: convert whitepaper.tex → in-browser HTML (needs pandoc) and
+    # publish whitepaper.pdf alongside it. The page appears only when both the
+    # .tex and .pdf exist and the pandoc conversion succeeds.
+    wp_body = None
+    if WHITEPAPER_TEX.is_file() and WHITEPAPER_PDF.is_file():
+        wp_body = _pandoc_body(WHITEPAPER_TEX)
+    elif WHITEPAPER_TEX.is_file() or WHITEPAPER_PDF.is_file():
+        _warn("white paper: need both whitepaper.tex and whitepaper.pdf — skipping the page")
+    have_wp = wp_body is not None
+
     nav_frag = '<a href="index.html">home</a>'
     if have_ct:
         nav_frag += '<a href="methods.html">methods</a><a href="tools.html">tools</a>'
+    if have_wp:
+        nav_frag += '<a href="whitepaper.html">white paper</a>'
 
     # Render every page through the static post-processor. index.html is the new
     # landing page; the day-by-day archive (formerly index.html) is summaries.html.
     grouped = ts._group_by_day(talks)
     pages = {
-        "index.html": staticize(render_landing(talks, grouped, have_ct)),
+        "index.html": staticize(render_landing(talks, grouped, have_ct, have_wp)),
         "summaries.html": add_nav(staticize(ts.render_summaries_page()), nav_frag),
         "topics.html": add_nav(staticize(ts.render_topics_page()), nav_frag),
     }
     for date, _label, _dtalks in grouped:
         pages[f"day-{date}.html"] = add_nav(staticize(ts.render_day_page(date)), nav_frag)
+    # Secondary pages share a common inner nav (back to the day/topic archive);
+    # add_nav then prepends home/methods/tools/white-paper.
+    inner_nav = ('<a href="summaries.html">day summaries</a>'
+                 '<a href="topics.html">key topics</a>')
     if have_ct:
-        ct_nav = ('<a href="summaries.html">day summaries</a>'
-                  '<a href="topics.html">key topics</a>')
-        pages["methods.html"] = add_nav(staticize(render_concepts(concepts, ct_nav)), nav_frag)
-        pages["tools.html"] = add_nav(staticize(render_tools(tools, ct_nav)), nav_frag)
+        pages["methods.html"] = add_nav(staticize(render_concepts(concepts, inner_nav)), nav_frag)
+        pages["tools.html"] = add_nav(staticize(render_tools(tools, inner_nav)), nav_frag)
+    if have_wp:
+        wp_page = render_whitepaper(wp_body, "whitepaper.pdf", inner_nav,
+                                    _whitepaper_generated(WHITEPAPER_TEX))
+        pages["whitepaper.html"] = add_nav(staticize(wp_page), nav_frag)
     for name, body in pages.items():
         (out / name).write_text(body)
         if args.verbose:
@@ -522,6 +656,12 @@ def main():
     refs = sorted(set(re.findall(r'(?:src|href)="(talks/[^"]+)"', combined)))
     copy_assets(refs, talks, out, all_slides=True,
                 include_transcripts=args.include_transcripts, verbose=args.verbose)
+
+    # Publish the typeset white paper PDF next to its in-browser page.
+    if have_wp:
+        shutil.copyfile(WHITEPAPER_PDF, out / "whitepaper.pdf")
+        if args.verbose:
+            print(f"  copied whitepaper.pdf ({WHITEPAPER_PDF.stat().st_size} bytes)", flush=True)
 
     (out / ".nojekyll").write_text("")
 
